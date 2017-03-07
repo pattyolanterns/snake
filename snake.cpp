@@ -9,7 +9,7 @@ void Snake::init(int xStart, int yStart, char* name)
 
 	s[0] = p;
 
-	xspeed = 2;
+	xspeed = 1;
 	yspeed = 0;
 
 	size = 1;
@@ -19,9 +19,10 @@ void Snake::init(int xStart, int yStart, char* name)
 
 void Snake::updatePoints()
 {
-	for (int i = size; i > 0; i--)
+	for (int i = size - 1; i > 0; i--)
 	{
-		s[i] = s[i - 1];
+		s[i]->x = s[i - 1]->x;
+		s[i]->y = s[i - 1]->y;
 	}
 }
 
@@ -29,7 +30,7 @@ void Snake::updateSnake(char c)
 {
 	if (c == 'w' || c == 'W')
 	{
-		if (xspeed != 0 && yspeed != 1)
+		if (yspeed != 1 && yspeed != -1)
 		{
 			xspeed = 0;
 			yspeed = -1;
@@ -37,7 +38,7 @@ void Snake::updateSnake(char c)
 	}
 	else if (c == 's' || c == 'S')
 	{
-		if (xspeed != 0 && yspeed != -1)
+		if (yspeed != 1 && yspeed != -1)
 		{
 			xspeed = 0;
 			yspeed = 1;
@@ -45,23 +46,22 @@ void Snake::updateSnake(char c)
 	}
 	else if (c == 'a' || c == 'A')
 	{
-		if (xspeed != 2 && yspeed != 0)
+		if (xspeed != 1 && xspeed != -1)
 		{
-			xspeed = -2;
+			xspeed = -1;
 			yspeed = 0;
 		}
 	}
 	else if (c == 'd' || c == 'D')
 	{
-		if (xspeed !=-2 && yspeed != 0)
+		if (xspeed != 1 && xspeed != -1)
 		{
-			xspeed = 2;
+			xspeed = 1;
 			yspeed = 0;
 		}
 	}
-
-	s[0]->x += xspeed;
-	s[0]->y += yspeed;
+	else
+		return;
 }
 
 void Snake::getHighscore()
@@ -114,9 +114,9 @@ void Snake::updateHighscore()
 
 bool Snake::death()
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 1; i < size; i++)
 	{
-		if (s[i]->x == x && s[i]->y == y)
+		if (s[i]->x == s[0]->x && s[i]->y == s[0]->y)
 		{
 			// HIT ITSELF
 			return 1;

@@ -5,6 +5,11 @@ void Canvas::init(char* name)
 	snake = new Snake();
 	snake->init(XBOUND_LOW + 1, YBOUND_LOW + 1, name);
 
+	curX = XBOUND_LOW + 1;
+	curY = YBOUND_LOW + 1;
+	prevX = XBOUND_LOW;
+	prevY = YBOUND_LOW;
+
 	initscr();
 	noecho();
 	nodelay(stdscr, TRUE);
@@ -29,7 +34,7 @@ void Canvas::init(char* name)
 		printw("%s", "|");
 	}
 
-	move(YBOUND_LOW + 1, XBOUND_LOW + 1);
+	move(curY, curX);
 	printw("%s", "0");
 	dropFood();
 }
@@ -37,8 +42,7 @@ void Canvas::init(char* name)
 bool Canvas::checkCollision()
 {
 	// BORDER COLLSION
-	if (snake->y == YBOUND_LOW || snake->y == YBOUND_HIGH || snake->x <= XBOUND_LOW 
-	|| snake->x >= XBOUND_HIGH)
+	if (curY == YBOUND_LOW || curY == YBOUND_HIGH || curX + 1 == XBOUND_LOW || curX + 1 == XBOUND_HIGH)
 	{
 		return true;
 	}
@@ -58,6 +62,11 @@ void Canvas::loop()
 
 void Canvas::updateScreen()
 {
+	int tempFrameRate = FRAMERATE;
+
+	if (snake->xspeed != 0)
+		tempFrameRate = 2 * FRAMERATE;
+
 	struct timeb t_start, t_current;
 	int t_diff;
 
@@ -69,13 +78,14 @@ void Canvas::updateScreen()
 		ftime(&t_current);
 		t_diff = (int) (1000.0 * (t_current.time - t_start.time) + (t_current.millitm - t_start.millitm));
 	}
-	while(t_diff <= (1000/15));
+	while(t_diff <= (1000/tempFrameRate));
 	// END FRAME RATE
+
+	curX = snake->s[0]->x;
+	curY = snake->s[0]->y;
 
 	prevX = snake->s[snake->size-1]->x;
 	prevY = snake->s[snake->size-1]->y;
-	move(prevY, prevX);
-	printw("%s", " ");
 
 	snake->updatePoints();
 
@@ -84,8 +94,18 @@ void Canvas::updateScreen()
 	// COLLIDES WITH WALL OR ITSELF 
 	if (checkCollision())
 	{
+		for (int i = 1; i < snake->size; i++)
+		{
+			move(snake->s[i]->y, snake->s[i]->x);
+			printw("%s", " ");
+		}
 		snake->resetSnake();
 		snake->init(XBOUND_LOW + 1, YBOUND_LOW + 1, snake->player);
+
+		if (snake->size > snake->highscore)
+		{
+			snake->updateHighscore();
+		}
 	}
 	// ATE A PIRCE OF FOOD
 	else if (curX == xFood && curY == yFood)
@@ -99,8 +119,12 @@ void Canvas::updateScreen()
 		dropFood();
 	}
 
-	
+	move(prevY, prevX);
+	printw("%s", " ");
+
+	printSnake();
 	updateBar();
+
 	refresh();
 }
 
@@ -117,6 +141,10 @@ void Canvas::updateBar()
 	{
 		printw("      NEW HIGHSCORE!!");
 	}
+
+	move(40, 60);
+	printw("%d, %d", curY, curX);
+
 	move(tempy, tempx);
 }
 
@@ -152,6 +180,9 @@ int Canvas::getRandomNum (int min, int max)
 
 void Canvas::printSnake()
 {
+	snake->s[0]->x += snake->xspeed;
+	snake->s[0]->y += snake->yspeed;
+
 	for (int i = 0; i < snake->size; i++)
 	{
 		move(snake->s[i]->y, snake->s[i]->x);

@@ -13,6 +13,8 @@
 #define YBOUND_LOW	3
 #define YBOUND_HIGH	36
 
+#define FRAMERATE 15
+
 class Canvas
 {
 
