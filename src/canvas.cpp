@@ -154,10 +154,11 @@ void Canvas::dropFood()
 	getyx(stdscr, tempy, tempx);
 
 	int randX, randY;
-	bool isValid = true;
+	bool isValid;
 
 	while (1)
 	{
+		isValid = true;
 		randY = getRandomNum(YBOUND_LOW + 1, YBOUND_HIGH - 1);
 		randX = getRandomNum(XBOUND_LOW + 1, XBOUND_HIGH - 1);
 		
