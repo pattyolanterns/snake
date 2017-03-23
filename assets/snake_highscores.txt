@@ -1,6 +1,4 @@
-Unkown,15
-Thomas,13
-Nate,9
-Nate,5
-Nate,3
+thomas,45
+thomas,29
+thomas,24
 Thomas,1
