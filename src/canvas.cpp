@@ -79,6 +79,9 @@ void Canvas::loop()
 				move(snake->s[i]->y, snake->s[i]->x);
 				printw("%s", " ");
 			}
+			move(yFood, xFood);
+			printw("%s", " ");
+			dropFood();
 
 			if (snake->size > snake->highscore)
 				snake->updateHighscore();
